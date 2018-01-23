@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Pi randomizer</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/chart.js@2.7.1/dist/Chart.bundle.js"></script>
+  <script src="https://unpkg.com/chartkick@2.2.4"></script>
+  <script src="https://unpkg.com/vue-chartkick@0.2.0/dist/vue-chartkick.js"></script>
+</head>
+<body>
+  <div id="app">
+    <input type="number" v-model="r">
+    <input type="number" v-model="loop">
+    <button @click="random()">Random</button>
+    <button @click="randArr = []">Reset</button>
+    <line-chart :data="chartData"></line-chart>
+    <br>
+    result: {{randArr[randArr.length - 1]? randArr[randArr.length - 1].pi : 0}}</span>
+    <ul>
+      <li v-for="(res,r) in randArr" :key="r">
+        x: {{res.x}}, y: {{res.y}}, hit: {{res.hit}}, pi: {{res.pi}}
+      </li>
+    </ul>
+  </div>
+</body>
+</html>
+
+<script>
+var app = new Vue({
+  el: '#app',
+  components: ['line-chart'],
+  data: {
+    randArr: [],
+    r: 10,
+    loop: 100,
+  },
+  computed: {
+    chartData() {
+      return this.randArr.map(res => [res.i, res.pi])
+    }
+  },
+  methods: {
+    random() {
+      let hitCount = 0
+      let sum = 0
+
+      this.randArr = []
+
+      for (let i = 1; i <= this.loop; i++) {
+        let x = (Math.random() * 2*this.r) - this.r
+        let y = (Math.random() * 2*this.r) - this.r
+
+        let hit = x*x + y*y <= this.r * this.r
+
+        if (hit) {
+          hitCount++
+        }
+
+        this.randArr.push({
+          i: i,
+          x: x,
+          y: y,
+          hit: hit,
+          pi: 4 * hitCount / i
+        })
+      }
+    }
+  }
+})
+
+</script>
